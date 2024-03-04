@@ -6,27 +6,24 @@ class Car:
         self.mainCtrl = "cc_main"
         self.subCtrl = "cc_sub"
         self.jntNameAndPos = {
-            "root": {
-                "jnt_root": (0, 15, 0), 
-                "jnt_body": (0, 45, 0), 
-                "jnt_bodyEnd": (0, 145, 0), 
-            }, 
-            "wheelLeftFront": {
-                "jnt_wheelLeftFront": (70, 30, 140), 
-                "jnt_wheelLeftFrontEnd": (85, 30, 140), 
-            }, 
-            "wheelRightFront": {
-                "jnt_wheelRightFront": (-70, 30, 140), 
-                "jnt_wheelRightFrontEnd": (-85, 30, 140), 
-            }, 
-            "wheelLeftRear": {
-                "jnt_wheelLeftRear": (70, 30, -140), 
-                "jnt_wheelLeftRearEnd": (85, 30, -140), 
-            }, 
-            "wheelRightRear": {
-                "jnt_wheelRightRear": (-70, 30, -140), 
-                "jnt_wheelRightRearEnd": (-85, 30, -140), 
-            }, 
+            "jnt_root": (0, 15, 0), 
+            "jnt_body": (0, 45, 0), 
+            "jnt_bodyEnd": (0, 145, 0), 
+            "jnt_wheelLeftFront": (70, 30, 140), 
+            "jnt_wheelLeftFrontEnd": (85, 30, 140), 
+            "jnt_wheelRightFront": (-70, 30, 140), 
+            "jnt_wheelRightFrontEnd": (-85, 30, 140), 
+            "jnt_wheelLeftRear": (70, 30, -140), 
+            "jnt_wheelLeftRearEnd": (85, 30, -140), 
+            "jnt_wheelRightRear": (-70, 30, -140), 
+            "jnt_wheelRightRearEnd": (-85, 30, -140), 
+        }
+        self.hierarchy1 = {
+            "center": ["jnt_root", "jnt_body", "jnt_bodyEnd"], 
+            "LeftFront": [f"jnt_wheelLeftFront{i}" for i in ["", "End"]], 
+            "RightFront": [f"jnt_wheelRightFront{i}" for i in ["", "End"]], 
+            "LeftRear": [f"jnt_wheelLeftRear{i}" for i in ["", "End"]], 
+            "RightRear": [f"jnt_wheelRightRear{i}" for i in ["", "End"]], 
         }
 
 
