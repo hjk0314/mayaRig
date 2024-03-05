@@ -51,9 +51,26 @@ def getBoundingBoxPosition(vertexOrObject) -> list:
     return [x, y, z]
 
 
+def getBoundingBoxSize(vertexOrObject) -> list:
+    boundingBox = pm.xform(vertexOrObject, q=True, bb=True, ws=True)
+    xMin, yMin, zMin, xMax, yMax, zMax = boundingBox
+    x = (xMax - xMin) / 2
+    y = (yMax - yMin) / 2
+    z = (zMax - zMin) / 2
+    boundingBoxSize = max(x, y, z)
+    boundingBoxSize = round(boundingBoxSize, 3)
+    return boundingBoxSize
+
+
 def orientJoints(joints=[], primaryAxis='yzx', secondaryAxis='zup'):
-    """ The default value of primaryAxis and secondaryAxis are 
-    the same as Mixamo spine. """
+    """ This settings are Mixamo values.
+    - "yzx"
+    - "zup"
+
+    The Default settings in MAYA is
+    - "xyz"
+    - "yup"
+     """
     if joints:
         allJoints = [pm.PyNode(i) for i in joints]
     else:
@@ -266,6 +283,19 @@ def setJointsStyle(joints=[], drawStyle=2) -> list:
         except:
             continue
     return result
+
+
+def parentHierarchically(selections: list=[]):
+    if not selections:
+        sel = pm.selected()
+    else:
+        sel = [pm.PyNode(i) for i in selections]
+    for idx, parents in enumerate(sel):
+        try:
+            child = sel[idx + 1]
+            pm.parent(child, parents)
+        except:
+            continue
 
 
 class RigGroups:
@@ -630,11 +660,15 @@ class Controllers:
             }
 
 
-    def createControllers(self, *args):
-        """ If there are no arguments, all controllers will be created.
+    def createControllers(self, **kwargs):
+        """ If there are no **kwargs, all controllers will be created.
         However, it is usually used as follows.
-        >>> createCurveControllers(cube, sphere ...)
-        >>> return ["created curve name", ...]
+        >>> createCurveControllers()
+        >>> return [all controllers]
+        >>> createCurveControllers(cube="newCubeName", cone="newConeName")
+        >>> return ["newCubeName", "newConeName"]
+        >>> createCurveControllers(**{"cube": "cubeName", "cone": "coneName"})
+        >>> return ["cubeName", "coneName"]
 
         - "arrow", "arrow2", "arrow3", "arrow4", "arrow5", "arrow6", 
         - "car", "car2", "car3", "circle", "cone", "cone2", 
@@ -643,14 +677,23 @@ class Controllers:
         - "hat", "head", "hoof", "hoof2", 
         - "pipe", "pointer", 
         - "scapula", "sphere", "square", 
-        """
-        allShapes = self.controllerShapes.keys()
-        curvesToMake = [i for i in args if i in allShapes]
+         """
+        allShp = self.controllerShapes.keys()
         result = []
-        for shapeName in curvesToMake:
-            position = self.controllerShapes[shapeName]
-            curve = pm.curve(p=position, d=1, n=shapeName)
-            result.append(curve)
+        if kwargs.keys():
+            cuvToMake = [i for i in kwargs.keys() if i in allShp]
+        else:
+            cuvToMake = allShp
+        for shpName in cuvToMake:
+            pos = self.controllerShapes[shpName]
+            try:
+                cuvName = kwargs[shpName]
+            except:
+                cuvName = shpName
+            cuv = pm.curve(p=pos, d=1, n=cuvName)
+            result.append(cuv)
         return result
 
 
+ctrl = Controllers()
+ctrl.createControllers(car="", car2="", car3="")
