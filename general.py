@@ -229,19 +229,22 @@ def selectJointOnly() -> list:
     return result
 
 
-def groupingWithOwnPivot(sel=[]) -> list:
-    selections = sel if sel else pm.ls(sl=True)
+def groupingWithOwnPivot(*arg) -> list:
+    selections = arg if arg else pm.ls(sl=True)
     result = []
     for i in selections:
         groupName = f"{i}_grp"
-        emptyGroup = pm.group(em=True, n=groupName)
-        pm.matchTransform(emptyGroup, i, pos=True, rot=True)
-        try:
-            pm.parent(emptyGroup, pm.listRelatives(i, p=True))
-        except:
-            pass
-        pm.parent(i, emptyGroup)
-        result.append(groupName)
+        if pm.objExists(groupName) or not pm.objExists(i):
+            continue
+        else:
+            emptyGroup = pm.group(em=True, n=groupName)
+            pm.matchTransform(emptyGroup, i, pos=True, rot=True)
+            try:
+                pm.parent(emptyGroup, pm.listRelatives(i, p=True))
+            except:
+                pass
+            pm.parent(i, emptyGroup)
+            result.append(groupName)
     return result
 
 
@@ -309,7 +312,7 @@ class RigGroups:
 
     def createRigGroups(self, assetName=""):
         if assetName:
-            self.groupNames[assetName] = self.groupNames.pop["assetName"]
+            self.groupNames[assetName] = self.groupNames.pop("assetName")
         for parents, children in self.groupNames.items():
             if not pm.objExists(parents):
                 pm.group(em=True, n=parents)
@@ -690,10 +693,11 @@ class Controllers:
                 cuvName = kwargs[shpName]
             except:
                 cuvName = shpName
-            cuv = pm.curve(p=pos, d=1, n=cuvName)
-            result.append(cuv)
+            if pm.objExists(cuvName):
+                continue
+            else:
+                cuv = pm.curve(p=pos, d=1, n=cuvName)
+                result.append(cuv)
         return result
 
 
-ctrl = Controllers()
-ctrl.createControllers(car="", car2="", car3="")
